@@ -31,13 +31,11 @@ const UpdateFormModal = ({ onClose, userId, currentUsername, currentEmail }) => 
 			headers: { authorization: `Bearer ${token}` },
 		};
 
-		const response = await axios.patch(
+		await axios.patch(
 			`${process.env.REACT_APP_API_URL}/users/${userId}`,
 			data,
 			headerAuthorization
 		);
-
-		console.log(response);
 	};
 
 	return (

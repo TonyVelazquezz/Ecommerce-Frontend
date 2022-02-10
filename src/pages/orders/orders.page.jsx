@@ -1,19 +1,38 @@
-// import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
-// Components
-// import OrderItem from '../../components/orders/order-item/order-item.component';
+// Redux
+import { fetchUserOrders } from '../../store/actions/orders.action';
+
+//Components
+import OrderItem from '../../components/orders/order-item/order-item.component';
 
 import classes from './orders.styles.module.css';
 
 const Orders = () => {
-	// // State (Redux)
-	// const order = useSelector(state => state.orders.orders);
-	// // console.log(products);
-	// const { date, totalPrice, id } = order;
+	const dispatch = useDispatch();
+
+	// State redux
+	const userOrders = useSelector(state => state.orders.userOrders);
+	// console.log(userOrders);
+	const token = useSelector(state => state.user.token);
+
+	// Effects
+	useEffect(() => {
+		dispatch(fetchUserOrders(token));
+	}, [dispatch, token]);
 
 	return (
 		<div className={classes['orders-list']}>
-			{/* <OrderItem date={date} totalPrice={totalPrice} orderId={id} /> */}
+			<h2>Your orders</h2>
+			{userOrders.map(orderItem => (
+				<OrderItem
+					key={orderItem.id}
+					date={orderItem.date}
+					totalPrice={orderItem.totalPrice}
+					orderId={orderItem.id}
+				/>
+			))}
 		</div>
 	);
 };

@@ -8,41 +8,49 @@ import Modal from '../../UI/modal/modal.component';
 import classes from './order-details-modal.styles.module.css';
 
 const OrderDetailsModal = ({ onClose, id }) => {
-	// const token = useSelector(state => state.user.token);
+	const token = useSelector(state => state.user.token);
 
-	// State
+	// States
 	const [orderProducts, setOrderProducts] = useState([]);
-
-	const fetchOrderDetails = async () => {
-		try {
-			// const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders/${id}`, {
-			// 	headers: { authorization: `Bearer ${token}` },
-			// });
-			// const { orders } = response.data.data;
-			setOrderProducts([...orderProducts, orders]);
-		} catch (error) {
-			console.log(error);
-		}
-	};
+	const [orderDetail, setOrderDetail] = useState({});
 
 	// Effects
 	useEffect(() => {
+		const fetchOrderDetails = async () => {
+			try {
+				const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders/${id}`, {
+					headers: { authorization: `Bearer ${token}` },
+				});
+
+				const { order } = response.data.data;
+
+				// console.log(order);
+
+				setOrderProducts(order.productsInOrders);
+				setOrderDetail(order);
+			} catch (error) {
+				console.log(error);
+			}
+		};
+
 		fetchOrderDetails();
-	}, []);
+	}, [id, token]);
 
 	return (
 		<Modal onClick={onClose}>
 			<div className={classes['details__header']}>
-				<h2>Your order was for a total: $12.99</h2>
+				<h2>Your order was for a total: {orderDetail.totalPrice}</h2>
 			</div>
 
-			<div className={classes['details__items']}>
-				<div className={classes.item}>
-					<p className={classes['item__name']}>Product name</p>
-					<p className={classes['item__qty']}>Requested qty</p>
-					<p className={classes['item__price']}>Unitary Price</p>
+			{orderProducts.map(productItem => (
+				<div key={productItem.id} className={classes['details__items']}>
+					<div className={classes.item}>
+						<p className={classes['item__name']}>{productItem.product.name}</p>
+						<p className={classes['item__qty']}>{productItem.quantity}</p>
+						<p className={classes['item__price']}>{productItem.price}</p>
+					</div>
 				</div>
-			</div>
+			))}
 		</Modal>
 	);
 };
